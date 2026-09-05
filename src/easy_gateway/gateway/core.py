@@ -177,7 +177,7 @@ class EasyGateway:
         def welcome():
             return {
                 "Status": "easy gateway is running",
-                "INFO": "admin & docs -> /docs",
+                "INFO": "admin -> /docs",
             }
 
         @self.app.get("/health")
