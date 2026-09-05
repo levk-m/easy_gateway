@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 from loguru import logger
-
+from importlib.metadata import version
 from easy_gateway.gateway.core import EasyGateway
 
 ascii_logo = r"""
@@ -47,6 +47,7 @@ def validate_config(config_path: Path) -> bool:
 
 
 def main():
+    vers = version("easy-gateway")
     parser = argparse.ArgumentParser(
         description="🚀 Easy Gateway - simple API gateway",
         usage="easy-gateway [OPTIONS]",
@@ -68,9 +69,10 @@ Examples:
     )
 
     parser.add_argument(
+        "-v",
         "--version",
         action="version",
-        version="Easy Gateway 1.0.0",
+        version=vers,
     )
 
     parser.add_argument(
