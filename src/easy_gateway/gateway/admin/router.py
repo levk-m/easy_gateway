@@ -2,15 +2,16 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from loguru import logger
 
 from easy_gateway.gateway.admin.security import auth_user
+from easy_gateway.router.router import RouteType
 
 router = APIRouter(
     prefix="/admin", tags=["Gateway Admin Panel"], dependencies=[Depends(auth_user)]
 )
-PREFIX = "[ADMIN]"
+PREFIX: str = "[ADMIN]"
 
 
 @router.post("/add_route")
-def add_route(req: Request, path: str, target: str):
+def add_route(req: Request, path: str, target: str) -> dict[str, str]:
     gateway = req.app.state.gateway
     gateway.router.validate(path, target)
     gateway.router.add_route(path, target)
@@ -21,7 +22,7 @@ def add_route(req: Request, path: str, target: str):
 
 
 @router.delete("/del_route")
-def delete_route(req: Request, path: str):
+def delete_route(req: Request, path: str) -> dict[str, str]:
     gateway = req.app.state.gateway
     if gateway.router.delete_route(path):
         logger.info(f"{PREFIX} ✅ route {path} deleted!")
@@ -32,7 +33,7 @@ def delete_route(req: Request, path: str):
 
 
 @router.get("/all_routes")
-def show_all_routes(req: Request):
+def show_all_routes(req: Request) -> dict[str, dict[str, dict[str, str]] | str]:
     gateway = req.app.state.gateway
     exact = gateway.router.exact_routes
     prefix = gateway.router.prefix_routes
@@ -49,7 +50,7 @@ def show_all_routes(req: Request):
 
 
 @router.put("/update/{path:path}")
-def update_route(req: Request, path: str, new_target: str):
+def update_route(req: Request, path: str, new_target: str) -> dict[str, str]:
     gateway = req.app.state.gateway
     try:
         gateway.router.update_route(path, new_target)
@@ -61,7 +62,7 @@ def update_route(req: Request, path: str, new_target: str):
 
 
 @router.get("/check/{path:path}")
-def find_path(req: Request, path: str):
+def find_path(req: Request, path: str) -> dict[str, str | RouteType | None] | str:
     gateway = req.app.state.gateway
     result = gateway.router.find_target(path)
 

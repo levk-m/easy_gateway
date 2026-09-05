@@ -29,7 +29,9 @@ from easy_gateway.router.router import Router
 
 class EasyGateway:
     def __init__(
-        self, config_path: str = "easy_conf.yaml", config: dict[str, Any] = None
+        self,
+        config_path: str = "easy_conf.yaml",
+        config: dict[str, Any] | None = None,
     ):
         if config is None:
             config = read_config(config_path)
@@ -47,7 +49,9 @@ class EasyGateway:
                 await self.redis.close()
                 logger.info("Redis connection closed")
 
-        self.app = FastAPI(title="Easy Gateway", lifespan=lifespan)
+        self.app = FastAPI(
+            title="Easy Gateway", lifespan=lifespan, docs_url="/admin", redoc_url=None
+        )
         self.app.state.gateway = self
         self.router = Router()
         self.middlewares: list[Middleware] = []
@@ -58,7 +62,7 @@ class EasyGateway:
         self._setup_handler()
         self._setup_cors()
 
-    def _setup_cors(self):
+    def _setup_cors(self) -> None:
         cors_config = self.config.get("cors", {})
         if isinstance(cors_config, dict) and "allow_origins" in cors_config:
             allow_conf_origins = cors_config["allow_origins"]
@@ -69,7 +73,7 @@ class EasyGateway:
 
         self.app.add_middleware(CORSMiddleware, allow_origins=allow_conf_origins)
 
-    def _setup_middleware(self):
+    def _setup_middleware(self) -> None:
         middlewares_config = self.config.get("middlewares", [])
 
         for mw_config in middlewares_config:
@@ -87,7 +91,7 @@ class EasyGateway:
             else:
                 logger.warning(f"🚫 Unknown middleware: {name}")
 
-    def _setup_routes(self):
+    def _setup_routes(self) -> None:
         routes_config = self.config.get("routes")
         if not routes_config:
             logger.warning("🚫 No routes configured!")
@@ -109,7 +113,7 @@ class EasyGateway:
 
         logger.info("")
 
-    async def _setup_cache(self):
+    async def _setup_cache(self) -> None:
         redis_enabled = self.config.get("redis", {}).get("enabled", False)
         if redis_enabled:
             redis_url = self.config.get("redis", {}).get(
@@ -125,7 +129,7 @@ class EasyGateway:
         else:
             logger.info("✅ Running without cache (redis.enabled: false)")
 
-    def check_route_cache(self, path) -> bool:
+    def check_route_cache(self, path: str) -> bool:
         redis_enabled = self.config.get("redis", {}).get("enabled", False)
         if not redis_enabled:
             return False
@@ -141,23 +145,23 @@ class EasyGateway:
         return False
 
     @staticmethod
-    def generate_cache_key(path, method, params):
+    def generate_cache_key(path: str, method: str, params: dict[str, str]) -> str:
         params_key = json.dumps(sorted(params.items())) if params else ""
         digest = hashlib.md5(params_key.encode()).hexdigest()
         return f"cache:{path}:{method}:{digest}"
 
-    async def get_cache_data(self, key):
+    async def get_cache_data(self, key: str) -> Any:
         if not self.redis:
             return None
         data = await self.redis.get(key)
         return json.loads(data) if data else None
 
-    async def set_cache_data(self, key, data):
+    async def set_cache_data(self, key: str, data: dict[str, Any]) -> None:
         if not self.redis:
             return
         await self.redis.set(key, json.dumps(data), ex=self.cache_exp)
 
-    async def invalidate_cache(self, path):
+    async def invalidate_cache(self, path: str) -> None:
         if not self.redis:
             return
         cursor = 0
@@ -170,14 +174,14 @@ class EasyGateway:
             if cursor == 0:
                 break
 
-    def _setup_handler(self):
+    def _setup_handler(self) -> None:
         self.app.include_router(admin_router)
 
         @self.app.get("/")
         def welcome():
             return {
                 "Status": "easy gateway is running",
-                "INFO": "admin -> /docs",
+                "INFO": "admin page -> /admin",
             }
 
         @self.app.get("/health")
@@ -244,7 +248,6 @@ class EasyGateway:
                     url = target + "/"
 
             body = await request.body()
-            r_headers = dict(request.headers)
             r_headers = {
                 k: v for k, v in request.headers.items() if k.lower() != "host"
             }
@@ -285,7 +288,7 @@ class EasyGateway:
                     status_code=504, detail="[!] Backend timeout error [!]"
                 )
 
-    def run(self, config_path: str = "easy_conf.yaml", host="0.0.0.0", port=8000):
+    def run(self, host: str = "0.0.0.0", port: int = 8000) -> None:
         import uvicorn
 
         try:

@@ -1,6 +1,5 @@
 import time
 from collections import defaultdict
-from typing import Any
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
@@ -26,7 +25,7 @@ class RateLimitMiddleware(Middleware):
             return "unknown"
         return req.client.host
 
-    async def before_request(self, req: Request) -> Any:
+    async def before_request(self, req: Request) -> Request | JSONResponse:
         ip: str = self.get_client_ip(req)
 
         self._clean_old_requests(ip)

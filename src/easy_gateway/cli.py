@@ -1,9 +1,10 @@
 import argparse
 import sys
+from importlib.metadata import version
 from pathlib import Path
 
 from loguru import logger
-from importlib.metadata import version
+
 from easy_gateway.gateway.core import EasyGateway
 
 ascii_logo = r"""
@@ -18,7 +19,7 @@ ______                   _____       _
 """
 
 
-def setup_logger():
+def setup_logger() -> None:
     logger.remove()
 
     log_format = "<cyan>{time:HH:mm:ss}</cyan> | <level>{level: <8}</level> | <level>{message}</level>"
@@ -46,7 +47,7 @@ def validate_config(config_path: Path) -> bool:
         return False
 
 
-def main():
+def main() -> None:
     vers = version("easy-gateway")
     parser = argparse.ArgumentParser(
         description="🚀 Easy Gateway - simple API gateway",

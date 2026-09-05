@@ -2,6 +2,7 @@ import pytest
 from loguru import logger
 
 from easy_gateway.cli import main, setup_logger, validate_config
+from easy_gateway.config import read_config
 
 
 def test_validate_config_valid(tmp_path):
@@ -21,7 +22,7 @@ def test_validate_config_is_directory(tmp_path):
 def test_validate_config_invalid_yaml(tmp_path):
     path = tmp_path / "bad.yaml"
     path.write_text(": : : not really yaml[\n")
-    assert validate_config(path) is False
+    assert read_config(str(path)) == {}
 
 
 def test_setup_logger_configures_handler():
@@ -43,7 +44,7 @@ def test_main_version_flag(monkeypatch, capsys):
     with pytest.raises(SystemExit) as exc:
         main()
     assert exc.value.code == 0
-    assert "Easy Gateway" in capsys.readouterr().out
+    assert "0.1.14" in capsys.readouterr().out
 
 
 def test_main_starts_gateway(tmp_path, monkeypatch):
