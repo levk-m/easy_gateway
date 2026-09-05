@@ -38,6 +38,14 @@ async def test_logging_middleware_sets_start_time(request_mock):
     assert getattr(request_mock.state, "start_time", None) is not None
 
 
+async def test_logging_middleware_after_response_returns_response(request_mock):
+    mw = LoggingMiddleware()
+    await mw.before_request(request_mock)
+    res = JSONResponse(content={"ok": True}, status_code=200)
+    result = await mw.after_response(request_mock, res)
+    assert result is res
+
+
 async def test_rate_limit_allows_within_limit(request_mock):
     mw = RateLimitMiddleware(requests_per_minute=2)
     result = await mw.before_request(request_mock)
