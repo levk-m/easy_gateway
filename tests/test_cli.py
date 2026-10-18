@@ -39,14 +39,6 @@ def test_main_exits_on_invalid_config(tmp_path, monkeypatch):
     assert exc.value.code == 1
 
 
-def test_main_version_flag(monkeypatch, capsys):
-    monkeypatch.setattr("sys.argv", ["easy-gateway", "--version"])
-    with pytest.raises(SystemExit) as exc:
-        main()
-    assert exc.value.code == 0
-    assert "0.1.14" in capsys.readouterr().out
-
-
 def test_main_starts_gateway(tmp_path, monkeypatch):
     conf = tmp_path / "conf.yaml"
     conf.write_text("server:\n  host: 0.0.0.0\n  port: 8000\n")

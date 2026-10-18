@@ -1,36 +1,35 @@
-# Easy-Gateway configuration example
-# All fields are optional except routes[].path and routes[].target
+# Easy-Gateway example config.
+# Only routes[].path and routes[].target are required; everything else is optional.
 
 server:
-  host: "0.0.0.0"    # interface to bind
-  port: 8000         # port to listen on
+  host: "0.0.0.0"
+  port: 8000
 
 redis:
-  enabled: true            # false -> cache disabled (no Redis needed)
+  enabled: true                    # disable to run without Redis (caching off)
   url: "redis://localhost:6379"
-  expire_time: 300         # cache TTL in seconds (default: 180)
+  expire_time: 300                 # cache TTL, seconds (default: 180)
 
 routes:
-  # PREFIX route: /bin/anything -> https://httpbin.org/anything, /bin/ip -> https://httpbin.org/ip, ...
-  - path: "/bin/*"                 # any path starting with /bin
-    target: "https://httpbin.org/" # full URL, the requested path is appended
+  # Prefix route: /bin/<x> is proxied to <target>/<x>.
+  # Use a trailing "/*" and a full URL target.
+  - path: "/bin/*"
+    target: "https://httpbin.org/"
     description: "HTTPBin playground"
-    cache: true                    # enable response caching (default: false)
+    cache: true                    # cache successful GET responses (default: false)
 
-  # EXACT route: only /users -> https://api.example.com/users
-  # IMPORTANT: for exact routes the target must NOT include the path —
-  # the route path is appended to the target automatically
-  - path: "/users"                 # exact match only
+  # Exact route: matches /users only. The target must NOT contain a path —
+  # the route path is appended to it automatically.
+  - path: "/users"
     target: "https://api.example.com"
     description: "Exact route demo"
-    cache: true
 
   - path: "/pets/*"
     target: "https://petstore.swagger.io/"
     description: "Pets service"
     cache: true
 
-  # EXACT route demo against a real API: /jokes/random -> https://api.chucknorris.io/jokes/random
+  # Exact route against a real API: /jokes/random -> https://api.chucknorris.io/jokes/random
   - path: "/jokes/random"
     target: "https://api.chucknorris.io"
     description: "Random joke endpoint"
@@ -41,14 +40,13 @@ middlewares:
     enabled: true
 
   - name: "RateLimitMiddleware"
-    enabled: true
-    requests_per_minute: 30
+    requests_per_minute: 30        # default: 60
 
 cors:
-  allow_origins:
+  allow_origins:                   # defaults to ["*"] if omitted
     - "https://myfront.com"
     - "https://testreact.space"
 
-admin:
-  username: "admin"   # default: admin
-  password: "admin"   # change me in production!
+admin:                             # defaults to admin / admin — change in production
+  username: "admin"
+  password: "admin"
