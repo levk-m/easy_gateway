@@ -14,7 +14,7 @@ def auth_user(req: Request, credentials: HTTPBasicCredentials = Depends(security
     admin_name = admin_conf.get("password", "admin")
 
     if admin_pass == "admin" or admin_name == "admin":
-        logger.warning("⚠ Change username, password for production instead of admin!")
+        logger.warning("Change username, password for production instead of admin!")
 
     correct_username = secrets.compare_digest(credentials.username, admin_pass)
     correct_password = secrets.compare_digest(credentials.password, admin_name)

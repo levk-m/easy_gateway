@@ -69,7 +69,7 @@ class EasyGateway:
         else:
             allow_conf_origins = ["*"]
 
-        logger.info(f"🔨 Allow origins: {allow_conf_origins}\n")
+        logger.info(f"Allow origins: {allow_conf_origins}\n")
 
         self.app.add_middleware(CORSMiddleware, allow_origins=allow_conf_origins)
 
@@ -89,15 +89,15 @@ class EasyGateway:
                 self.middlewares.append(RateLimitMiddleware(requests_per_minute=rpm))
 
             else:
-                logger.warning(f"🚫 Unknown middleware: {name}")
+                logger.warning(f"Unknown middleware: {name}")
 
     def _setup_routes(self) -> None:
         routes_config = self.config.get("routes")
         if not routes_config:
-            logger.warning("🚫 No routes configured!")
+            logger.warning("No routes configured!")
             return
 
-        logger.info("🔨 Routes:")
+        logger.info("Routes:")
 
         for route in routes_config:
             path = route["path"]
@@ -105,7 +105,7 @@ class EasyGateway:
 
             if path.endswith("/*") and "://" not in target:
                 logger.warning(
-                    f"🚫 For prefix path: {path} target need to be full URL (with http://)"
+                    f"For prefix path: {path} target need to be full URL (with http://)"
                 )
 
             self.router.add_route(path, target)
@@ -122,12 +122,12 @@ class EasyGateway:
             try:
                 self.redis = await aioredis.from_url(redis_url)
                 await self.redis.ping()
-                logger.info(f"✅ Redis cache enabled: {redis_url}")
+                logger.info(f"Redis cache enabled: {redis_url}")
             except Exception as e:
-                logger.error(f"❌ Redis connection error: {e}. Caching disabled.")
+                logger.error(f"Redis connection error: {e}. Caching disabled.")
                 self.redis = None
         else:
-            logger.info("✅ Running without cache (redis.enabled: false)")
+            logger.info("Running without cache (redis.enabled: false)")
 
     def check_route_cache(self, path: str) -> bool:
         redis_enabled = self.config.get("redis", {}).get("enabled", False)
@@ -209,7 +209,7 @@ class EasyGateway:
             include_in_schema=False,
         )
         async def catch_all(request: Request, catch_path: str):
-            logger.debug(f"🎯 HANDLER CALLED: {request.method} {catch_path}")
+            logger.debug(f"HANDLER CALLED: {request.method} {catch_path}")
             request, middleware_response = await process_request_middleware(
                 self.middlewares, request
             )
@@ -301,9 +301,9 @@ class EasyGateway:
                 "Wrong server configuration, now gateway use standard port(8000) & host(0.0.0.0)"
             )
 
-        logger.info(f"✅ PORT: {port}, HOST: {host}")
+        logger.info(f"PORT: {port}, HOST: {host}")
         try:
             uvicorn.run(self.app, host=host, port=port, log_level="warning")
         except KeyboardInterrupt:
-            logger.info("👋 Shutting down...")
+            logger.info("Shutting down...")
             return

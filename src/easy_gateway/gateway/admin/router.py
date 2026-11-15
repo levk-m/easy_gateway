@@ -16,7 +16,7 @@ def add_route(req: Request, path: str, target: str) -> dict[str, str]:
     gateway.router.validate(path, target)
     gateway.router.add_route(path, target)
 
-    logger.info(f"{PREFIX} ✅ Route added: {path} --> {target}")
+    logger.info(f"{PREFIX} Route added: {path} --> {target}")
 
     return {"status": "success", "path": path, "target": target}
 
@@ -25,10 +25,10 @@ def add_route(req: Request, path: str, target: str) -> dict[str, str]:
 def delete_route(req: Request, path: str) -> dict[str, str]:
     gateway = req.app.state.gateway
     if gateway.router.delete_route(path):
-        logger.info(f"{PREFIX} ✅ route {path} deleted!")
+        logger.info(f"{PREFIX} route {path} deleted!")
         return {"status": "success", "message": f"Route '{path}' deleted"}
 
-    logger.error(f"{PREFIX} ❌ route {path} not found")
+    logger.error(f"{PREFIX} route {path} not found")
     return {"status": "error", "message": f"Route '{path}' not found"}
 
 
@@ -40,7 +40,7 @@ def show_all_routes(req: Request) -> dict[str, dict[str, dict[str, str]] | str]:
 
     def format_routes(routes):
         if not routes:
-            return "It's empty :("
+            return "No routes configured"
         return {path: {"url": data[0]} for path, data in routes.items()}
 
     return {
@@ -54,10 +54,10 @@ def update_route(req: Request, path: str, new_target: str) -> dict[str, str]:
     gateway = req.app.state.gateway
     try:
         gateway.router.update_route(path, new_target)
-        logger.info(f"[ADMIN] ✅ Route updated: {path} -> {new_target}")
+        logger.info(f"[ADMIN] Route updated: {path} -> {new_target}")
         return {"status": "success", "path": path, "target": new_target}
     except Exception as e:
-        logger.error(f"[ADMIN] ❌ Failed to update route {path}: {e}")
+        logger.error(f"[ADMIN] Failed to update route {path}: {e}")
         raise HTTPException(500, f"Failed to update route: {str(e)}")
 
 
@@ -67,7 +67,7 @@ def find_path(req: Request, path: str) -> dict[str, str | RouteType | None] | st
     result = gateway.router.find_target(path)
 
     if result[0] is None:
-        return f"🧐 Path {path} not found"
+        return f"Path {path} not found"
 
     target, remaining, route_type = result
     return {"target": target, "remaining": remaining, "route_type": route_type}

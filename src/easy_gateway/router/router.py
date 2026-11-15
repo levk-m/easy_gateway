@@ -18,7 +18,7 @@ class Router:
     def validate(self, path: str, target: str):
         if not (target.startswith("http://") or target.startswith("https://")):
             detail = "Target must be a full URL (with http:// or https://)"
-            logger.error(f"[ADMIN] ❌ Bad Request: {detail}")
+            logger.error(f"[ADMIN] Bad Request: {detail}")
             raise HTTPException(status_code=400, detail=detail)
 
     def add_route(self, path: str, target: str):

@@ -60,8 +60,8 @@ async def test_all_routes_empty(authed_headers):
     async with await _client(empty_gateway) as client:
         resp = await client.get("/admin/all_routes", headers=authed_headers)
     body = resp.json()
-    assert body["Exact routes"] == "It's empty :("
-    assert body["Prefix routes"] == "It's empty :("
+    assert body["Exact routes"] == "No routes configured"
+    assert body["Prefix routes"] == "No routes configured"
 
 
 async def test_update_route(configured_gateway, authed_headers):

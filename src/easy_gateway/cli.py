@@ -50,7 +50,7 @@ def validate_config(config_path: Path) -> bool:
 def main() -> None:
     vers = version("easy-gateway")
     parser = argparse.ArgumentParser(
-        description="🚀 Easy Gateway - simple API gateway",
+        description="Easy Gateway - simple API gateway",
         usage="easy-gateway [OPTIONS]",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
@@ -96,8 +96,8 @@ Examples:
 
     separator = "─" * (len(str(config_path.absolute())) + 20)
     logger.info(separator)
-    logger.info("🚀 Starting Easy Gateway...")
-    logger.info(f"📁 Config file: {config_path.absolute()}")
+    logger.info("Starting Easy Gateway...")
+    logger.info(f"Config file: {config_path.absolute()}")
     logger.info(separator)
 
     try:
@@ -105,10 +105,10 @@ Examples:
         gateway.run()
 
     except KeyboardInterrupt:
-        logger.info("\n👋 Shutting down...")
+        logger.info("\nShutting down...")
         sys.exit(0)
     except Exception as e:
-        logger.exception(f"❌ Failed to start gateway: {e}")
+        logger.exception(f"Failed to start gateway: {e}")
         sys.exit(1)
 
 
