@@ -225,3 +225,5 @@ config.yaml
 easy_gateway.egg-info
 /easy_gateway.egg-info
 .idea
+
+gateway.tape

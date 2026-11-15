@@ -1,12 +1,8 @@
 # Easy-Gateway
 
-[![Python](https://img.shields.io/badge/python-3.12%2B-blue)](https://www.python.org)
+<img alt="EasyGateway Demo" src="eg-demo.gif" width="600" />
+
 [![Tests](https://img.shields.io/github/actions/workflow/status/MarkLevkovich/easy_gateway/test.yml?branch=main&label=tests)](https://github.com/MarkLevkovich/easy_gateway/actions)
-[![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
-
-Lightweight API Gateway for microservices architectures.
-
-> **Current status:** Early MVP – functional, but expect rough edges.
 
 ### Features (MVP)
 
